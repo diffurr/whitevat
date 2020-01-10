@@ -1,13 +1,12 @@
-#pragma once
 #include <algorithm>
 #include <cstdlib>
+#include <ctime>
 #include <iostream>
 #include <string>
 #include "nipdigests.h"
 #include "hash.h"
 
 using json = nlohmann::json;
-//using namespace std::string_literals;
 
 void NIPdigests::init()
 {
@@ -15,8 +14,8 @@ void NIPdigests::init()
 	m_date = m_json["naglowek"]["dataGenerowaniaDanych"].get<std::string>();
 
 	memset(&m_utcDate, 0, sizeof(m_utcDate));
-	m_utcDate.tm_year = std::stoi(m_date.substr(0, 4));
-	m_utcDate.tm_mon = std::stoi(m_date.substr(4, 2));
+	m_utcDate.tm_year = std::stoi(m_date.substr(0, 4)) - 1900;
+	m_utcDate.tm_mon = std::stoi(m_date.substr(4, 2)) - 1;
 	m_utcDate.tm_mday = std::stoi(m_date.substr(6, 2));
 
 	m_activeDigs = m_json["skrotyPodatnikowCzynnych"].get_ptr<json::array_t*>();
@@ -79,4 +78,11 @@ CheckResults NIPdigests::searchMasks(const std::string& nip, const std::string& 
 	}
 
 	return result;
+}
+
+std::string getDateStr(const NIPdigests& digs, const std::string& form)
+{
+	char buffer[BUFSIZ];
+	strftime(buffer, BUFSIZ, form.c_str(), &digs.m_utcDate);
+	return std::string(buffer);
 }

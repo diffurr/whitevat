@@ -1,4 +1,4 @@
 #pragma once
-//#include <string>
+#include <string>
 
 std::string hash(std::string, int);
